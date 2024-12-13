@@ -10,8 +10,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 sudo dnf install mariadb105 -y 
 
-
-cat <<EOF > docker-compose.yml
+cat <<EOF > /home/ec2-user/docker-compose.yml
 version: '3.1'
 
 services:
@@ -32,7 +31,6 @@ volumes:
   wordpress:
 EOF
 
+sudo chown ec2-user:ec2-user /home/ec2-user/docker-compose.yml
 
-docker-compose up -d
-
-echo 
+sudo -u ec2-user docker-compose -f /home/ec2-user/docker-compose.yml up -d
