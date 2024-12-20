@@ -3,7 +3,7 @@
 ## 📝 Sobre o projeto
 
 <p align="center">
-  <img src="image/projeto-aws.png" alt="imagem de fluxo do projeto">
+  <img src="image/projeto-aws.png" alt="Fluxo do Projeto">
 </p>
 
 <p align="center">
@@ -20,28 +20,123 @@ Antes de começar, é necessário ter instalado em sua máquina as seguintes fer
 - [Conta na AWS](https://aws.amazon.com/pt/)
 - [Conta no Docker Hub](https://hub.docker.com/)
 
-Além disto, é bom ter um editor para trabalhar com o código, como [VSCode](https://code.visualstudio.com/).
+Além disso, é bom ter um editor para trabalhar com o código, como [VSCode](https://code.visualstudio.com/).
 
 ### ☁ Criando a infraestrutura na AWS
 
-| Etapa | Descrição |
-|-------|-----------|
-| **1. Criando VPC** | - Acesse o console da AWS e vá até o serviço VPC<br>- Clique em "Your VPCs" e depois em "Create VPC"<br>- Preencha os campos Name tag e IPv4 CIDR block<br>- Clique em "Create VPC" |
-| **2. Criando Subnets** | - Crie duas subnets, uma pública e outra privada<br>- A subnet pública deve ter a opção Auto-assign Public IPv4 Address habilitada<br>- A subnet privada deve ter a opção Auto-assign Public IPv4 Address desabilitada |
-| **3. Criando Internet Gateway** | - Vá até o serviço VPC e clique em "Internet Gateways"<br>- Clique em "Create internet gateway"<br>- Preencha o campo Name tag e clique em "Create internet gateway"<br>- Selecione o internet gateway criado e clique em "Attach to VPC"<br>- Selecione a VPC criada e clique em "Attach internet gateway"<br>- Vá até a aba "Route Tables" e selecione a route table associada à VPC<br>- Clique em "Edit routes" e adicione uma rota com Destination<br>- Clique em "Add route" e adicione uma rota com Destination |
-| **4. Criando Security Groups** | - Crie um security group para o Load Balancer<br>- Crie um security group para a instância EC2<br>- Crie um security group para o banco de dados RDS |
-| **5. Criando instância EC2** | - Crie uma instância EC2 com a subnet pública e o security group da instância EC2<br>- A instância deve ter uma chave para acesso SSH<br>- Amazon Linux 2023<br>- t2.micro |
-| **6. Criando banco de dados RDS** | - Crie um banco de dados RDS com a subnet privada e o security group do banco de dados RDS<br>- Selecione o banco de dados MySQL<br>- Preencha os campos DB instance identifier, Master username e Master password<br>- Clique em "Create database"<br>- db.t3.micro<br>- Multi-AZ deployment: Desabilitado<br>- Public access: Não<br>- Associar a uma VPC: Selecione a VPC criada<br>- Subnet group: Selecione a subnet privada<br>- Security group: Selecione o security group do banco de dados RDS<br>- Vincular ao EC2 |
-| **7. Criando Load Balancer** | - Crie um Load Balancer com a subnet pública e o security group do Load Balancer<br>- Selecione o Load Balancer do tipo Classic Load Balancer<br>- Preencha os campos Name, Listener configuration e Availability Zones<br>- Selecione o security group do Load Balancer<br>- Selecione a subnet pública<br>- Selecione a instância EC2 |
-| **8. Configurando EFS** | - Criando... |
-| **9. Acessando a aplicação** | - Criando... |
+#### 1. Criando VPC
 
-### 📂 Estrutura do Projeto
+<p align="center">
+  <img src="image/vpc-1.png" alt="Criação da VPC">
+</p>
 
-```plaintext
-.
-├── image/
-│   └── projeto-aws.png
-├── [README.md]
-└── [user-data.sh]
-```
+- Na imagem acima, é possível visualizar a criação de uma VPC.
+- Configurações:
+  - Nome: `wordpress-vpc`
+  - CIDR Block: `10.0.0.0/16`
+  - IPv4 CIDR Block: `No IPv4 CIDR Block`
+  - Tenancy: `Default`
+  - Número de AZs: `2` (us-east-1a, us-east-1b)
+  - Número de subnets públicas: `2`
+  - Número de subnets privadas: `2`
+  - NAT Gateway: `1 por AZ`
+  - VPC Endpoints: `S3`
+
+<p align="center">
+  <img src="image/vpc-2.png" alt="VPC Criada">
+</p>
+
+- Na imagem acima, a VPC foi criada com sucesso.
+
+#### 2. Criando Security Groups
+
+<p align="center">
+  <img src="image/security-group-1.png" alt="Criação do Security Group">
+</p>
+
+- Na imagem acima, é possível visualizar a criação de um Security Group.
+- Configurações:
+  - Nome: `wordpress-sg`
+  - Descrição: `Security Group para o Wordpress`
+  - VPC: `wordpress-vpc`
+  - Regras de entrada:
+    - Custom TCP Rule, Port Range `80`, Anywhere IPv4
+    - HTTP, Port `80`, Anywhere IPv4
+    - SSH, Port `22`, My IP
+    - MySQL/Aurora, Port `3306`, Anywhere IPv4
+  - Regras de saída:
+    - All Traffic, All, Anywhere IPv4
+
+<p align="center">
+  <img src="image/security-group-2.png" alt="Security Group Criado">
+</p>
+
+- Security Group criado com sucesso.
+- A configuração do banco de dados será finalizada após a criação do RDS, pois lá será possível pegar o endpoint do banco de dados.
+
+#### 3. Criando EC2
+
+<p align="center">
+  <img src="image/ec2-1.png" alt="Criação da EC2">
+</p>
+
+- Na imagem acima, é possível visualizar a criação de uma EC2.
+- Configurações:
+  - Nome e tags (Importante para a criação da EC2)
+  - AMI: `Amazon Linux 2023`
+  - Tipo de instância: `t2.micro`
+
+<p align="center">
+  <img src="image/ec2-2.png" alt="Configurações da EC2">
+</p>
+
+- Configurações adicionais:
+  - Key Pair: `PB-Nov-2024` (chave utilizada para acessar a instância)
+  - Configurações de rede:
+    - VPC: `wordpress-vpc`
+    - Subnet: `wordpress-public-subnet-1`
+    - Auto-assign Public IP: `Disable` (a instância será privada e acessada pelo Load Balancer)
+    - Security Group: `wordpress-sg`
+  - Advanced Details: conforme o arquivo `user-data.sh`
+
+#### 4. Criando RDS
+
+<p align="center">
+  <img src="image/rds-1.png" alt="Criação do RDS">
+
+- Na imagem acima, é possível visualizar a criação de um RDS.
+- Selecionar o banco de dados MySQL.
+- Configurações:
+  - Engine options: `MySQL`
+  - Version: `MySQL 8.0.25`
+  - Templates: `Free tier`
+  - Settings:
+    - DB instance identifier: `wordpress-db`
+    - Master username: `admin`
+    - Master password: `exemplosenha`
+  - DB instance size: `db.t2.micro`
+  - Storage: `20 GB`
+  - Connectivity:
+    - VPC: `wordpress-vpc`
+    - Subnet group: `wordpress-private-subnet-group`
+    - Publicly accessible: `No`
+    - VPC security group: `wordpress-sg`
+  - Additional configuration:
+    - Initial database name: `wordpress`
+
+  <img src="image/rds-1.png" alt="Criação do RDS">
+
+  - RDS criado com sucesso.
+  - Após a criação, é possível visualizar o endpoint do banco de dados.
+  - Esse endpoint será utilizado para configurar o Wordpress. 
+  - No doocker-compose.yml, é necessário alterar o endpoint o nome do banco de dados, usuário e senha.
+  - acessando a ec2 e criando um banco chamado wordpress e alterando dentro do docker compose
+
+  <img src="image/wordpress.png" alt="Criação do RDS">
+
+  - Após a configuração do banco de dados, é possível acessar o Wordpress.
+  - porém agora é necessário criar um Load Balancer para acessar o Wordpress, um efs e um auto scaling group para garantir a alta disponibilidade do serviço.
+
+#### 5. Criando Load Balancer
+
+
