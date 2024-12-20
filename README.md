@@ -107,6 +107,7 @@ Além disso, é bom ter um editor para trabalhar com o código, como [VSCode](ht
 - Na imagem acima, é possível visualizar a criação de um RDS.
 - Selecionar o banco de dados MySQL.
 - Configurações:
+
   - Engine options: `MySQL`
   - Version: `MySQL 8.0.25`
   - Templates: `Free tier`
@@ -128,7 +129,7 @@ Além disso, é bom ter um editor para trabalhar com o código, como [VSCode](ht
 
   - RDS criado com sucesso.
   - Após a criação, é possível visualizar o endpoint do banco de dados.
-  - Esse endpoint será utilizado para configurar o Wordpress. 
+  - Esse endpoint será utilizado para configurar o Wordpress.
   - No doocker-compose.yml, é necessário alterar o endpoint o nome do banco de dados, usuário e senha.
   - acessando a ec2 e criando um banco chamado wordpress e alterando dentro do docker compose
 
@@ -139,4 +140,35 @@ Além disso, é bom ter um editor para trabalhar com o código, como [VSCode](ht
 
 #### 5. Criando Load Balancer
 
+<p align="center">
+  <img src="image/load-balancer-1.png" alt="Criação do Load Balancer">
+
+- Na imagem acima, é possível visualizar a criação de um Load Balancer.
+- Configurações:
+
+  - Nome: `wordpress-lb`
+  - Scheme: `internet-facing`
+  - IP address type: `ipv4`
+  - Listeners:
+    - HTTP: `80`
+    - Target group: `wordpress-tg`
+  - Availability Zones: `us-east-1a`, `us-east-1b`
+  - Security settings: `wordpress-sg`
+
+  <p align="center">
+  <img src="image/load-balancer-2.png" alt="Criação do Load Balancer">
+
+  - Health checks:
+    - Protocol: `HTTP`
+    - /wp-admin/install.php
+    - O load balancer precisa estar vinculado com a instância EC2.
+
+  <p align="center">
+  <img src="image/load-balancer-3.png" alt="Criação do Load Balancer">
+
+  - Load Balancer criado com sucesso e em serviço. passando pelo health check.
+
+#### 6. Criando EFS
+
+#### 7. Criando Auto Scaling Group
 
