@@ -46,7 +46,13 @@ Configurações: (Voce pode colocar a configuração que desejar, abaixo esta a 
 
 Na imagem acima, a VPC foi criada com sucesso.
 
+<br/>
+
+<hr/>
+
 #### 2. Depois de criar a VPC, efetuamos a criação do NAT Gateway
+
+<br/>
 
 <p align="center">
   <img src="image/nat-gateway.png" alt="Criação do NAT Gateway">
@@ -54,7 +60,7 @@ Na imagem acima, a VPC foi criada com sucesso.
 
 Para a instância privada acessar a internet, é necessário criar um NAT Gateway.
 
-Configurações:
+Configurações: (Esse NAT Gateway será associado na subnet privada conforme o nome abaixo do laboratório)
 
 - Nome: `wordpress-nat-gateway`
 - Subnet: `wordpress-public-subnet-a`
@@ -78,7 +84,7 @@ Após a configuração, é possível acessar a instância privada e instalar o D
 
 Clicando em `Create file system`, é possível visualizar a criação de um EFS.
 
-Dê um nome ao EFS e selecione a VPC `wordpress-vpc`.
+Dê um nome ao EFS e selecione a VPC criada do passo 1 `wordpress-vpc`.
 
 <p align="center">
   <img src="image/efs-2.png" alt="Criação do EFS">
@@ -87,6 +93,8 @@ Dê um nome ao EFS e selecione a VPC `wordpress-vpc`.
 Na imagem acima, é possível visualizar a criação de um EFS.
 
 #### 4. Criando Security Groups
+
+// colocar no passo 3
 
 <p align="center">
   <img src="image/sg-1.png" alt="Criação do Security Group">
@@ -151,7 +159,11 @@ Configurações:
 - Auto-assign Public IP: `Enable`
 - Security Group: `wordpress-publico-sg`
 - Key pair: `wordpress-key-pair`
-- user data
+- user data (Opcional), desejado apenas nas máquinas privadas (passo abaixo).
+
+<p align="center">
+  <img src="image/bastion-host1.png" alt="Criação do Bastion Host">
+</p>
 
 A segunda EC2 será a instância privada.
 
@@ -179,9 +191,9 @@ Configurações:
 - Key pair: `wordpress-key-pair`
 - user data
 
-<p align="center">
-  <img src="image/bastion-host1.png" alt="Criação do Bastion Host">
-</p>
+```shell
+colocar user data
+```
 
 Após a criação, é necessário acessar a instância Bastion Host e configurar o acesso à instância privada.
 
