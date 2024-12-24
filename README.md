@@ -6,18 +6,17 @@
   <img src="image/projeto-aws.png" alt="Fluxo do Projeto">
 </p>
 
-Este projeto é desenvolvido com o intuito de criar uma infraestrutura na AWS utilizando uma VPC, Subnets, Security Groups, EC2, RDS e um Load Balancer.
+Este projeto é desenvolvido com o intuito de criar uma infraestrutura na AWS utilizando uma VPC, Subnets, Security Groups, EC2, RDS e um Load Balancer, EFS, Bastion Host e Auto Scaling Group.
 
 ## Passo a passo para execução do projeto
 
 ### Pré-requisitos
 
-Antes de começar, é necessário ter instalado em sua máquina as seguintes ferramentas:
-
 - [Git](https://git-scm.com)
 - [Conta na AWS](https://aws.amazon.com/pt/)
+- [VSCode](https://code.visualstudio.com/)
 
-Além disso, é bom ter um editor para trabalhar com o código, como [VSCode](https://code.visualstudio.com/).
+<h1 align="center">Iniciando Implantação do Laboratório</h1>
 
 ### ☁ Criando a infraestrutura na AWS
 
@@ -118,7 +117,6 @@ O primeiro SG será privado:
   - Protocol: `TCP`
   - Port Range: `443`
   - Source: `security group publico`
-
 
 O segundo SG será público:
 

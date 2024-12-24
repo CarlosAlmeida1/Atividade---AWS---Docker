@@ -5,14 +5,14 @@ PORT="22"
 IDENTITY_FILE="~/.ssh/PB-Nov-2024.pem"
 
 Host bastion-host
-HostName 44.204.193.88
+HostName 44.201.153.88
 User ec2-user
 Port 22
 IdentityFile ~/.ssh/PB-Nov-2024.pem
 IdentitiesOnly yes
 
 Host private-ec2
-HostName 10.0.132.35
+HostName 10.0.135.255
 User ec2-user
 Port 22
 IdentityFile ~/.ssh/PB-Nov-2024.pem
