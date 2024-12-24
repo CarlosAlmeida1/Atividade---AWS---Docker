@@ -20,7 +20,7 @@ Este projeto é desenvolvido com o intuito de criar uma infraestrutura na AWS ut
 
 ### ☁ Criando a infraestrutura na AWS
 
-#### 1. Criando VPC
+#### 1. Primeiro passo é iniciar a criação da VPC
 
 <p align="center">
   <img src="image/vpc-1.png" alt="Criação da VPC">
