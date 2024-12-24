@@ -12,7 +12,7 @@ IdentityFile ~/.ssh/PB-Nov-2024.pem
 IdentitiesOnly yes
 
 Host private-ec2
-HostName 10.0.135.255
+HostName 10.0.128.238
 User ec2-user
 Port 22
 IdentityFile ~/.ssh/PB-Nov-2024.pem
