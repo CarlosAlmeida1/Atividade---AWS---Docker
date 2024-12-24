@@ -28,7 +28,7 @@ Este projeto é desenvolvido com o intuito de criar uma infraestrutura na AWS ut
 
 Na imagem acima, é possível visualizar a criação de uma VPC.
 
-Configurações:
+Configurações: (Voce pode colocar a configuração que desejar, abaixo esta a configuração que foi utilizada nesse laboratório)
 
 - Nome: `wordpress-vpc`
 - CIDR Block: `10.0.0.0/16`
