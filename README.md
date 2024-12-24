@@ -46,7 +46,7 @@ Configurações: (Voce pode colocar a configuração que desejar, abaixo esta a 
 
 Na imagem acima, a VPC foi criada com sucesso.
 
-#### 2. Criando NAT Gateway
+#### 2. Depois de criar a VPC, efetuamos a criação do NAT Gateway
 
 <p align="center">
   <img src="image/nat-gateway.png" alt="Criação do NAT Gateway">
