@@ -25,7 +25,7 @@ services:
       - 80:80
     environment:
       WORDPRESS_DB_HOST: wordpress-db.czwaygssin91.us-east-1.rds.amazonaws.com
-      WORDPRESS_DB_USER: wordpress-db
+      WORDPRESS_DB_USER: admin
       WORDPRESS_DB_PASSWORD: 12072006
       WORDPRESS_DB_NAME: wordpressdb
     volumes:
@@ -34,6 +34,6 @@ EOF
 
 sudo mkdir -p /mnt/efs
 
-sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-008a5d8e93ac0241f.efs.us-east-1.amazonaws.com:/ /mnt/efs
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-0fe2222edcfa9a8ae.efs.us-east-1.amazonaws.com:/ /mnt/efs
  
 docker-compose -f /app/compose.yml up -d

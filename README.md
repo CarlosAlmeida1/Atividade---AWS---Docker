@@ -16,7 +16,6 @@ Antes de começar, é necessário ter instalado em sua máquina as seguintes fer
 
 - [Git](https://git-scm.com)
 - [Conta na AWS](https://aws.amazon.com/pt/)
-- [Conta no Docker Hub](https://hub.docker.com/)
 
 Além disso, é bom ter um editor para trabalhar com o código, como [VSCode](https://code.visualstudio.com/).
 
@@ -61,11 +60,10 @@ Configurações:
 - Nome: `wordpress-nat-gateway`
 - Subnet: `wordpress-public-subnet-a`
 - Elastic IP: `Create new EIP`
-- obs: crie NAT Gateway para cada subnet privada.
 
 Após a criação, é necessário configurar a rota na tabela de rotas da VPC.
 
-Coloque o NAT Gateway como destino e a Internet Gateway como alvo.
+Coloque o NAT Gateway como destino e a Internet Gateway como alvo na tabela de rotas da subnet privada
 
 <p align="center">
   <img src="image/nat-gateway-1.png" alt="Configuração do NAT Gateway">
@@ -107,7 +105,20 @@ O primeiro SG será privado:
   - Type: `SSH`
   - Protocol: `TCP`
   - Port Range: `22`
-  - Source: `My IP`
+  - Source: `0.0.0.0/0`
+  - Type: `HTTP`
+  - Protocol: `TCP`
+  - Port Range: `80`
+  - Source: `security group publico`
+  - Type: `MySQL/Aurora`
+  - Protocol: `TCP`
+  - Port Range: `3306`
+  - Source: `0.0.0.0/0`
+  - Type: `HTTPS`
+  - Protocol: `TCP`
+  - Port Range: `443`
+  - Source: `security group publico`
+
 
 O segundo SG será público:
 
@@ -118,10 +129,10 @@ O segundo SG será público:
   - Protocol: `TCP`
   - Port Range: `22`
   - Source: `Anywhere IPv4`
-  - Type: `Custom TCP`
+  - Type: `HTTP`
   - Protocol: `TCP`
   - Port Range: `80`
-  - Source: `Anywhere IPv4`
+  - Source: `0.0.0.0/0`
 
 #### 5. Criando EC2 e Bastion Host
 
@@ -135,7 +146,7 @@ A primeira EC2 será o Bastion Host.
 
 Configurações:
 
-- AMI: `Amazon Linux 2`
+- AMI: `Amazon Linux 2023`
 - Instance type: `t2.micro`
 - Network: `wordpress-vpc`
 - Subnet: `wordpress-public-subnet-a`
@@ -148,7 +159,7 @@ A segunda EC2 será a instância privada.
 
 Configurações:
 
-- AMI: `Amazon Linux 2`
+- AMI: `Amazon Linux 2023`
 - Instance type: `t2.micro`
 - Network: `wordpress-vpc`
 - Subnet: `wordpress-private1-subnet-a`
@@ -161,7 +172,7 @@ A terceira EC2 será a instância privada.
 
 Configurações:
 
-- AMI: `Amazon Linux 2`
+- AMI: `Amazon Linux 2023`
 - Instance type: `t2.micro`
 - Network: `wordpress-vpc`
 - Subnet: `wordpress-private2-subnet-b`
