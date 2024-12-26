@@ -70,49 +70,7 @@ Na imagem acima, é possível visualizar a criação de um EFS.
 
 ---
 
-#### 3. Criando RDS
-
-Agora com todos os passos anteriores realizados, vamos criar o RDS, que será o banco de dados utilizado pelo Wordpress.
-
-<p align="center">
-  <img src="image/rds-1.png" alt="Criação do RDS">
-</p>
-
-Na imagem acima, é possível visualizar a criação de um RDS.
-
-Selecionar o banco de dados MySQL.
-
-Configurações:
-
-- Engine options: `MySQL`
-- Version: `MySQL 8.0.25`
-- Templates: `Free tier`
-- Settings:
-  - DB instance identifier: `wordpress-db`
-  - Master username: `admin`
-  - Master password: `exemplosenha`
-- DB instance size: `db.t2.micro`
-- Storage: `20 GB`
-- Connectivity:
-  - VPC: `wordpress-vpc`
-  - Subnet group: `wordpress-private-subnet-group`
-  - Publicly accessible: `No`
-  - VPC security group: `wordpress-sg`
-- Additional configuration:
-  - Initial database name: `wordpress`
-- Desabilitando checks para evitar custo adicional.
-
-Após a criação, é possível visualizar o endpoint do banco de dados.
-
-Esse endpoint será utilizado para configurar o Wordpress.
-
-No `docker-compose.yml`, é necessário alterar o endpoint, o nome do banco de dados, usuário e senha.
-
-Acessando a EC2 e criando um banco chamado `wordpress` e alterando dentro do docker compose.
-
----
-
-#### 4. Criando Security Groups
+#### 3. Criando Security Groups
 
 <p align="center">
   <img src="image/sg-1.png" alt="Criação do Security Group">
@@ -157,6 +115,47 @@ O segundo SG será público:
   - Protocol: `TCP`
   - Port Range: `80`
   - Source: `0.0.0.0/0`
+
+---
+
+#### 4. Criando RDS
+Agora com todos os passos anteriores realizados, vamos criar o RDS, que será o banco de dados utilizado pelo Wordpress.
+
+<p align="center">
+  <img src="image/rds-1.png" alt="Criação do RDS">
+</p>
+
+Na imagem acima, é possível visualizar a criação de um RDS.
+
+Selecionar o banco de dados MySQL.
+
+Configurações:
+
+- Engine options: `MySQL`
+- Version: `MySQL 8.0.25`
+- Templates: `Free tier`
+- Settings:
+  - DB instance identifier: `wordpress-db`
+  - Master username: `admin`
+  - Master password: `exemplosenha`
+- DB instance size: `db.t2.micro`
+- Storage: `20 GB`
+- Connectivity:
+  - VPC: `wordpress-vpc`
+  - Subnet group: `wordpress-private-subnet-group`
+  - Publicly accessible: `No`
+  - VPC security group: `wordpress-sg`
+- Additional configuration:
+  - Initial database name: `wordpress`
+- Desabilitando checks para evitar custo adicional.
+
+Após a criação, é possível visualizar o endpoint do banco de dados.
+
+Esse endpoint será utilizado para configurar o Wordpress.
+
+No `docker-compose.yml`, é necessário alterar o endpoint, o nome do banco de dados, usuário e senha.
+
+Acessando a EC2 e criando um banco chamado `wordpress` e alterando dentro do docker compose.
 
 ---
 
@@ -325,5 +324,5 @@ Wordpress acessado com sucesso.
 <h2 align="center">Autoria</h2>
 
 <p align="center">
-  Este projeto foi desenvolvido por <a href="https://github.com/CarlosAlmeida1">Carlos Henrique</a>. Atribuído pela <a href="https://compass.uol/pt/home/">Compass.Uol</a> e orientado por Thiago Geremias de Oliveira.
+  Este projeto foi desenvolvido por <a href="https://github.com/CarlosAlmeida1">Carlos Henrique</a> . Atribuído pela <a href="https://compass.uol/pt/home/">Compass.Uol</a> e orientado por Thiago Geremias de Oliveira. 
 </p>
