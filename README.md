@@ -24,7 +24,7 @@ Este projeto é desenvolvido com o intuito de criar uma infraestrutura na AWS ut
 
 ### ☁ Criando a infraestrutura na AWS
 
-#### 1. Primeiro passo é iniciar a criação da VPC
+#### 1. Primeiro passo é iniciar a criação da VPC e Subnets
 
 <p align="center">
   <img src="image/vpc-1.png" alt="Criação da VPC">
@@ -52,95 +52,21 @@ Na imagem acima, a VPC foi criada com sucesso.
 
 ---
 
-#### 2. Criando Security Groups
+#### 2. Criando EFS
 
 <p align="center">
-  <img src="image/sg-1.png" alt="Criação do Security Group">
+  <img src="image/efs-1.png" alt="Criação do EFS">
 </p>
 
-Na imagem acima, é possível visualizar a criação de um Security Group.
+Clicando em `Create file system`, é possível visualizar a criação de um EFS.
 
-Configurações:
+Dê um nome ao EFS e selecione a VPC criada no passo 1 `wordpress-vpc`.
 
-O primeiro SG será privado:
+<p align="center">
+  <img src="image/efs-2.png" alt="Criação do EFS">
+</p>
 
-- Nome: `wordpress-privado-sg`
-- Descrição: `Security Group para instâncias privadas`
-- Regras de entrada:
-  - Type: `SSH`
-  - Protocol: `TCP`
-  - Port Range: `22`
-  - Source: `0.0.0.0/0`
-  - Type: `HTTP`
-  - Protocol: `TCP`
-  - Port Range: `80`
-  - Source: `security group publico`
-  - Type: `MySQL/Aurora`
-  - Protocol: `TCP`
-  - Port Range: `3306`
-  - Source: `0.0.0.0/0`
-  - Type: `HTTPS`
-  - Protocol: `TCP`
-  - Port Range: `443`
-  - Source: `security group publico`
-
-O segundo SG será público:
-
-- Nome: `wordpress-publico-sg`
-- Descrição: `Security Group para instâncias públicas`
-- Regras de entrada:
-  - Type: `SSH`
-  - Protocol: `TCP`
-  - Port Range: `22`
-  - Source: `Anywhere IPv4`
-  - Type: `HTTP`
-  - Protocol: `TCP`
-  - Port Range: `80`
-  - Source: `0.0.0.0/0`
-
-### User Data
-
-```shell
-#!/bin/bash
-
-sudo yum update -y
-sudo yum install -y docker
-
-sudo systemctl start docker
-sudo systemctl enable docker
-
-sudo usermod -aG docker ec2-user
-newgrp docker
-
-sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-
-sudo chmod +x /usr/local/bin/docker-compose
-
-sudo mkdir /app
-
-cat <<EOF > /app/compose.yml
-services:
-
-  wordpress:
-    image: wordpress
-    restart: always
-    ports:
-      - 80:80
-    environment:
-      WORDPRESS_DB_HOST: wordpress-db.czwaygssin91.us-east-1.rds.amazonaws.com
-      WORDPRESS_DB_USER: admin
-      WORDPRESS_DB_PASSWORD: 12072006
-      WORDPRESS_DB_NAME: wordpressdb
-    volumes:
-      - /mnt/efs:/var/www/html
-EOF
-
-sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-0fe2222edcfa9a8ae.efs.us-east-1.amazonaws.com:/ efs
-
-docker-compose -f /app/compose.yml up -d
-
-
-```
+Na imagem acima, é possível visualizar a criação de um EFS.
 
 ---
 
@@ -186,7 +112,55 @@ Acessando a EC2 e criando um banco chamado `wordpress` e alterando dentro do doc
 
 ---
 
-#### 4. Criando NAT Gateway
+#### 4. Criando Security Groups
+
+<p align="center">
+  <img src="image/sg-1.png" alt="Criação do Security Group">
+</p>
+
+Na imagem acima, é possível visualizar a criação de um Security Group.
+
+Configurações:
+
+O primeiro SG será privado:
+
+- Nome: `wordpress-privado-sg`
+- Descrição: `Security Group para instâncias privadas`
+- Regras de entrada:
+  - Type: `SSH`
+  - Protocol: `TCP`
+  - Port Range: `22`
+  - Source: `0.0.0.0/0`
+  - Type: `HTTP`
+  - Protocol: `TCP`
+  - Port Range: `80`
+  - Source: `security group publico`
+  - Type: `MySQL/Aurora`
+  - Protocol: `TCP`
+  - Port Range: `3306`
+  - Source: `0.0.0.0/0`
+  - Type: `HTTPS`
+  - Protocol: `TCP`
+  - Port Range: `443`
+  - Source: `security group publico`
+
+O segundo SG será público:
+
+- Nome: `wordpress-publico-sg`
+- Descrição: `Security Group para instâncias públicas`
+- Regras de entrada:
+  - Type: `SSH`
+  - Protocol: `TCP`
+  - Port Range: `22`
+  - Source: `Anywhere IPv4`
+  - Type: `HTTP`
+  - Protocol: `TCP`
+  - Port Range: `80`
+  - Source: `0.0.0.0/0`
+
+---
+
+#### 5. Criando NAT Gateway
 
 <p align="center">
   <img src="image/nat-gateway.png" alt="Criação do NAT Gateway">
@@ -209,24 +183,6 @@ Coloque o NAT Gateway como destino e a Internet Gateway como alvo na tabela de r
 </p>
 
 Após a configuração, é possível acessar a instância privada e instalar o Docker e o Docker Compose.
-
----
-
-#### 5. Criando EFS
-
-<p align="center">
-  <img src="image/efs-1.png" alt="Criação do EFS">
-</p>
-
-Clicando em `Create file system`, é possível visualizar a criação de um EFS.
-
-Dê um nome ao EFS e selecione a VPC criada no passo 1 `wordpress-vpc`.
-
-<p align="center">
-  <img src="image/efs-2.png" alt="Criação do EFS">
-</p>
-
-Na imagem acima, é possível visualizar a criação de um EFS.
 
 ---
 
@@ -366,7 +322,7 @@ Wordpress acessado com sucesso.
 
 ---
 
-<h2 align="center">👨‍💻 Autoria</h2>
+<h2 align="center">Autoria</h2>
 
 <p align="center">
   Este projeto foi desenvolvido por <a href="https://github.com/CarlosAlmeida1">Carlos Henrique</a>. Atribuído pela <a href="https://compass.uol/pt/home/">Compass.Uol</a> e orientado por Thiago Geremias de Oliveira.
