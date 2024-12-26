@@ -89,14 +89,18 @@ O primeiro SG será privado:
   - Protocol: `TCP`
   - Port Range: `22`
   - Source: `0.0.0.0/0`
+  ---
   - Type: `HTTP`
   - Protocol: `TCP`
   - Port Range: `80`
   - Source: `security group publico`
+  ---
   - Type: `MySQL/Aurora`
   - Protocol: `TCP`
   - Port Range: `3306`
   - Source: `0.0.0.0/0`
+  #### é muito importante que a porta 3306 esteja aberta para que a instância privada consiga se comunicar com o RDS.
+  ---
   - Type: `HTTPS`
   - Protocol: `TCP`
   - Port Range: `443`
@@ -111,6 +115,7 @@ O segundo SG será público:
   - Protocol: `TCP`
   - Port Range: `22`
   - Source: `Anywhere IPv4`
+  ---
   - Type: `HTTP`
   - Protocol: `TCP`
   - Port Range: `80`
@@ -170,7 +175,7 @@ Para a instância privada acessar a internet, é necessário criar um NAT Gatewa
 Configurações: (Esse NAT Gateway será associado na subnet privada conforme o nome abaixo do laboratório)
 
 - Nome: `wordpress-nat-gateway`
-- Subnet: `wordpress-public-subnet-a`
+- Subnet: `wordpress-public-subnet-a` e `wordpress-public-subnet-b`
 - Elastic IP: `Create new EIP`
 
 Após a criação, é necessário configurar a rota na tabela de rotas da VPC.
@@ -237,6 +242,50 @@ Configurações:
 - Security Group: `wordpress-privado-sg`
 - Key pair: `wordpress-key-pair`
 - user data
+
+O user data é um script que será executado na inicialização da instância.
+
+```bash
+#!/bin/bash
+ 
+sudo yum update -y
+sudo yum install -y docker
+ 
+sudo systemctl start docker
+sudo systemctl enable docker
+ 
+sudo usermod -aG docker ec2-user
+newgrp docker
+ 
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+ 
+sudo chmod +x /usr/local/bin/docker-compose
+ 
+sudo mkdir /app
+ 
+cat <<EOF > /app/compose.yml
+services:
+ 
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: projeto-wordpress-db.czwaygssin91.us-east-1.rds.amazonaws.com
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: 12072006
+      WORDPRESS_DB_NAME: admin
+    volumes:
+      - /mnt/efs:/var/www/html
+EOF
+
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-01e562587e1798162.efs.us-east-1.amazonaws.com:/ /mnt/efs
+ 
+docker-compose -f /app/compose.yml up -d
+ 
+
+```
 
 Após a criação, é necessário acessar a instância Bastion Host e configurar o acesso à instância privada.
 

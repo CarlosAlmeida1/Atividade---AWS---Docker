@@ -24,10 +24,10 @@ services:
     ports:
       - 80:80
     environment:
-      WORDPRESS_DB_HOST: wordpress-db.czwaygssin91.us-east-1.rds.amazonaws.com
+      WORDPRESS_DB_HOST: projeto-wordpress-db.czwaygssin91.us-east-1.rds.amazonaws.com
       WORDPRESS_DB_USER: admin
       WORDPRESS_DB_PASSWORD: 12072006
-      WORDPRESS_DB_NAME: wordpressdb
+      WORDPRESS_DB_NAME: admin
     volumes:
       - /mnt/efs:/var/www/html
 EOF
